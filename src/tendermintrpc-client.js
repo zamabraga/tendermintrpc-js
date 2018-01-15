@@ -30,9 +30,14 @@ module.exports = class TenderMintRPCClient extends EventEmitter {
         params,
         id: 'dontcare'
       }
-    }).then(({ data }) => {
-      this.emit(method, data)
-      return data
     })
+      .then(({ data }) => {
+        this.emit(method, data)
+        return data
+      })
+      .catch((error) => {
+        this.emit('error', error)
+        return error
+      })
   }
 }

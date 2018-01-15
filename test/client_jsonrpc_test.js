@@ -9,11 +9,15 @@ describe('JSONRPC', () => {
       (e) => e !== 'constructor' && !e.startsWith('_')
     )
     methods.forEach((t) => {
-      it(`should request method ${t}`, async () => {
-        const data = await client[t]()
-        const { jsonrpc, id } = data
-        assert.equal(jsonrpc, '2.0')
-        assert.equal(id, 'dontcare')
+      it(`should request method ${t}`, async (done) => {
+        try {
+          const data = await client[t]()
+          const { jsonrpc, id } = data
+          assert.equal(jsonrpc, '2.0')
+          assert.equal(id, 'dontcare')
+        } catch ({ message }) {
+          done(message)
+        }
       })
     })
     methods.forEach((t) => {
@@ -23,6 +27,9 @@ describe('JSONRPC', () => {
           assert.equal(jsonrpc, '2.0')
           assert.equal(id, 'dontcare')
           done()
+        })
+        client.on('error', ({ message }) => {
+          done(message)
         })
         client[t]()
       })
